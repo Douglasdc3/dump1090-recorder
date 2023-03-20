@@ -1,0 +1,67 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            jpackage: 'jpackage-linux.cfg'
+            executable: 'dump1090-recorder.deb'
+          - os: windows-latest
+            jpackage: 'jpackage-windows.cfg'
+            executable: 'dump1090-recorder.exe'
+          - os: macos-latest
+            jpackage: 'jpackage-mac.cfg'
+            executable: 'dump1090-recorder.app'
+
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - id: checkout-code
+        name: Checkout code
+        uses: actions/checkout@v3
+
+      - id: setup-jdk
+        name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+          cache: 'gradle'
+
+      - name: Setup gradle
+        uses: gradle/gradle-build-action@v2
+
+      - id: build
+        name: Build jar file
+        run: './gradlew build --scan'
+
+      - name: "Add build scan URL as PR comment"
+        uses: actions/github-script@v5
+        if: github.event_name == 'pull_request' && failure()
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
+            })
+
+      - name: Create executable
+        run: jpackage --verbose "@jpackage.cfg" "@${{ matrix.jpackage }}"
+
+      - id: upload-executable
+        name: Upload executable
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./build/release/*
+          name: ${{ matrix.executable }}
+          retention-days: 7

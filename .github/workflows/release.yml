@@ -1,0 +1,72 @@
+name: T
+
+on:
+  release:
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [ build-linux-installer, build-windows-installer ]
+    steps:
+
+      # DOWNLOAD INSTALLERS
+      - id: download-linux-installer
+        name: Download Linux installer
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-installer
+
+      - id: download-windows-installer
+        name: Download Windows installer
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-installer
+
+      - id: rename-downloaded-files
+        name: Rename downloaded files
+        run: |
+          ls -alR
+          mv consoleapp_0.0.1-1_amd64.deb consoleapp-0.0.1.deb
+          ls -alR
+      # CREATE GITHUB RELEASE AND ADD ASSETS
+      - id: tag
+        name: Move example-release tag
+        shell: bash
+        if: false
+        run: |
+          # Move tag
+          git tag -d example-release
+          git push --delete origin example-release
+          git tag -a example-release -m "Example of a Release"
+          git push --follow-tags
+      - id: create-release
+        name: Create GitHub release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: example-release
+          release_name: example-release
+          draft: false
+          prerelease: false
+      - id: release-linux-installer
+        name: Release Linux installer
+        uses: actions/upload-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: consoleapp-0.0.1.deb
+          asset_name: consoleapp-0.0.1.deb
+          asset_content_type: application/x-binary
+      - id: release-windows-installer
+        name: Release Windows installer
+        uses: actions/upload-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: consoleapp-0.0.1.msi
+          asset_name: consoleapp-0.0.1.msi
+          asset_content_type: application/x-binary

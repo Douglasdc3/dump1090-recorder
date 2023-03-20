@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'com.github.douglasdc3'
+version '1.0.0-SNAPSHOT'
+description = """Simple app which uses a running dump1090 instance to record dump1090 to rolling log file."""
+mainClassName = 'com.github.douglasdc3.dump1090recorder.Main'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'commons-cli:commons-cli:1.5.0'
+    implementation 'com.vlkan.rfos:rotating-fos:0.9.5'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    archiveFileName = 'dump1090-recorder.jar'
+
+    manifest {
+        attributes["Main-Class"] = mainClassName
+    }
+}
+
+task fatJar(type: Jar) {
+    archiveFileName = 'dump1090-recorder.jar'
+
+    manifest {
+        attributes 'Main-Class': "${mainClassName}"
+    }
+    archiveBaseName = "${rootProject.name}"
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+build.dependsOn(fatJar)

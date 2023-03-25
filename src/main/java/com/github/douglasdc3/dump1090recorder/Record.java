@@ -8,10 +8,9 @@ import org.apache.commons.cli.*;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
-public class Main {
+public class Record {
     public static void main(String[] args) throws ParseException, IOException, InterruptedException {
         Options options = new Options();
         options.addOption(Option.builder("help").desc("Print this message").build());

@@ -6,7 +6,7 @@ plugins {
 group 'com.github.douglasdc3'
 version '1.0.0-SNAPSHOT'
 description = """Simple app which uses a running dump1090 instance to record dump1090 to rolling log file."""
-mainClassName = 'com.github.douglasdc3.dump1090recorder.Main'
+mainClassName = 'com.github.douglasdc3.dump1090recorder.Record'
 
 repositories {
     mavenCentral()

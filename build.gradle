@@ -1,10 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.0.1"
 }
-
-apply plugin: 'org.jetbrains.gradle.plugin.idea-ext'
 
 group 'com.github.douglasdc3'
 version '2.0.0-SNAPSHOT'
@@ -47,32 +44,3 @@ task fatJar(type: Jar) {
 }
 
 build.dependsOn(fatJar)
-
-idea {
-    module {
-        setDownloadJavadoc(false)
-        setDownloadSources(true)
-    }
-
-    project {
-        settings {
-            runConfigurations {
-                "Help"(org.jetbrains.gradle.ext.Application) {
-                    mainClass = 'com.github.douglasdc3.dump1090recorder.Main'
-                    includeProvidedDependencies = true
-                    programParameters = "help"
-                }
-                "Record (default)"(org.jetbrains.gradle.ext.Application) {
-                    mainClass = 'com.github.douglasdc3.dump1090recorder.Main'
-                    includeProvidedDependencies = true
-                    programParameters = "record -h 127.0.0.1 -p 30002"
-                }
-                "Playback (default)"(org.jetbrains.gradle.ext.Application) {
-                    mainClass = 'com.github.douglasdc3.dump1090recorder.Main'
-                    includeProvidedDependencies = true
-                    programParameters = "playback -h 127.0.0.1 -p 30002 -f dump1090-adsb.log -s 1"
-                }
-            }
-        }
-    }
-}

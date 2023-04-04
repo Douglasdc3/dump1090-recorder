@@ -10,19 +10,37 @@ Download the executable from the releases page.
 Inside a terminal / Console window run the following command
 
 ```bash
-<executable> -h <your-dump-1090-ip> -p 30002
+<executable> record -h <your-dump-1090-ip> -p 30002
 ```
 
 For example on windows
 
 ```bash
-dump1090-recorder.exe -h 127.0.0.1 -p 30002
+dump1090-recorder.exe record -h 127.0.0.1 -p 30002
 ```
 
 On mac there is an issue with the build you can run the app using
 
 ```bash
-./dump1090-recorder/Contents/MacOS/dump1090-recorder -h 127.0.0.1 -p 30002
+./dump1090-recorder/Contents/MacOS/dump1090-recorder record -h 127.0.0.1 -p 30002
+```
+
+## Playback
+
+```bash
+<executable> playback -f ./dump1090-adsb.log -h <your-dump-1090-ip> -p 30002
+```
+
+For example on windows
+
+```bash
+dump1090-recorder.exe playback -f ./dump1090-adsb.log -h 127.0.0.1 -p 30002
+```
+
+On mac there is an issue with the build you can run the app using
+
+```bash
+./dump1090-recorder/Contents/MacOS/dump1090-recorder playback -f ./dump1090-adsb.log -h 127.0.0.1 -p 30002
 ```
 
 ## Contributing

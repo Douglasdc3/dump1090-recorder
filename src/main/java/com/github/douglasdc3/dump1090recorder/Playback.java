@@ -11,12 +11,14 @@ public class Playback implements Command {
     private final InetSocketAddress address;
     private final String file;
     private final int speed;
+    private final long max;
     private final ServerSocket socket;
 
-    public Playback(InetSocketAddress address, String file, int speed) {
+    public Playback(InetSocketAddress address, String file, int speed, int max) {
         this.address = address;
         this.file = file;
         this.speed = speed;
+        this.max = max * 1000;
 
         try {
             this.socket = new ServerSocket();
@@ -44,8 +46,11 @@ public class Playback implements Command {
                     message = in.readLine();
                     messageFields = message.split(";");
                     currentMessageTime = Long.parseLong(messageFields[0]);
-
                     if (!(lastMessageTime == 0)) {
+                        if ((currentMessageTime - lastMessageTime) > max) {
+                            System.out.println("Fast-forwarding: " + (currentMessageTime - lastMessageTime) / 1000 + " seconds");
+                            lastMessageTime = currentMessageTime - max;
+                        }
                         Thread.sleep((currentMessageTime - lastMessageTime) / speed);
                     }
                     lastMessageTime = currentMessageTime;

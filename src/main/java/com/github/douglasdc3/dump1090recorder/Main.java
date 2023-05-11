@@ -18,6 +18,7 @@ public class Main {
         options.addOption(Option.builder("record").desc("Start in playback mode").build());
         options.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").desc("Filename").build());
         options.addOption(Option.builder("s").longOpt("speed").hasArg().argName("speed").desc("Speed Multiplier").build());
+        options.addOption(Option.builder("m").longOpt("max").hasArg().argName("max").desc("Maximum playback pause").build());
         options.addOption(Option.builder("h").longOpt("host").hasArg().argName("ip").desc("IP Address").build());
         options.addOption(Option.builder("p").longOpt("port").hasArg().argName("port").desc("Port").build());
 
@@ -27,14 +28,17 @@ public class Main {
 
         if (input.getArgList().contains("record")) {
             program = new Main(new Record(
-                new InetSocketAddress(input.getOptionValue("host", "127.0.0.1"), Integer.parseInt(input.getOptionValue("port", "30002")))
+                new InetSocketAddress(input.getOptionValue("host", "127.0.0.1"),
+                                    Integer.parseInt(input.getOptionValue("port", "30002")))
             ));
         } else if (input.getArgList().contains("playback")) {
             program = new Main(new Playback(
-                new InetSocketAddress(input.getOptionValue("h", "127.0.0.1"), Integer.parseInt(input.getOptionValue("p", "30002"))),
-                input.getOptionValue("f", "dump1090-adsb.log"),
-                Integer.parseInt(input.getOptionValue("s", "1"))
-            ));
+                                new InetSocketAddress(input.getOptionValue("h", "127.0.0.1"),
+                                                    Integer.parseInt(input.getOptionValue("p", "30002"))),
+                                input.getOptionValue("f", "dump1090-adsb.log"),
+                                Integer.parseInt(input.getOptionValue("s", "1")),
+                                Integer.parseInt(input.getOptionValue("m", "60"))
+                            ));
         } else {
            if (!input.getArgList().contains("help"))  {
                System.out.println("Illegal argument provided.");
@@ -45,7 +49,7 @@ public class Main {
             System.out.println("\t<executable> record -h 127.0.01 -p 30002");
             System.out.println();
             System.out.println("\t<executable> playback -f ./dump1090-adsb.log");
-            System.out.println("\t<executable> playback -f ./dump1090-adsb.log -h 127.0.01 -p 30002");
+            System.out.println("\t<executable> playback -m 10 -f ./dump1090-adsb.log -h 127.0.01 -p 30002");
             System.out.println();
             System.out.println("Arguments:");
             System.out.println("----------");
